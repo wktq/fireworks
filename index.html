@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link href="https://fonts.googleapis.com/css?family=Fjalla+One" rel="stylesheet">
+    <style media="screen">
+      .container {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: #222;
+
+      }
+
+      .logo {
+        color: #fff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -webkit-transform: translate(-50%,-50%);
+        -moz-transform: translate(-50%,-50%);
+        -ms-transform: translate(-50%,-50%);
+        -o-transform: translate(-50%,-50%);
+        transform: translate(-50%,-50%);
+        font-family: 'Fjalla One', sans-serif;
+        font-size: 100px;
+        margin: 0;
+        letter-spacing: 0.1em;
+        text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+        -webkit-transition: 1s;
+        -moz-transition: 1s;
+        -o-transition: 1s;
+        transition: 1s;
+        -webkit-box-reflect: below -40px -webkit-gradient(linear, 0 0, 0 100%, from(transparent), color-stop(0.2, transparent), to(rgba(0,0,0,0.4)));
+      }
+
+      .qr-box {
+        position: absolute;
+        right: 5vh;
+        bottom: 5vh;
+      }
+
+      canvas {
+      	cursor: crosshair;
+      	display: block;
+      }
+
+      .star {
+        width: 4px;
+        height: 4px;
+        background-color: #fff;
+        position: absolute;
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <canvas id="canvas">Canvas is not supported in your browser.</canvas>
+      <p class="logo">FUKROO</p>
+      <div class="qr-box">
+        <img src="http://itpro.nikkeibp.co.jp/article/COLUMN/20061110/253264/zu1.jpg" alt="">
+      </div>
+      <div class="star"></div>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.js"
+      integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+      crossorigin="anonymous">
+    </script>
+    <script src="./main.js" charset="utf-8"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyBLvuXw3Q2zyzZ7rkgwQ8FQfIrJADJF51g",
+        authDomain: "realtime-33bad.firebaseapp.com",
+        databaseURL: "https://realtime-33bad.firebaseio.com",
+        storageBucket: "realtime-33bad.appspot.com",
+        messagingSenderId: "251949398084"
+      };
+      firebase.initializeApp(config);
+
+      function addFireworks(mx,my) {
+        firebase.database().ref('fireworks').push({
+          x: mx,
+          y: my
+        });
+      }
+
+      var innerWidth = window.innerWidth;
+      var innerHeight = window.innerHeight;
+
+      var fireworksRef = firebase.database().ref('fireworks')
+      fireworksRef.on('child_added', function(snapshot) {
+        var fireworks = snapshot.val();
+        var x = fireworks.x * innerWidth;
+        var y = fireworks.y * innerHeight;
+
+        sendFireworks(x, y);
+      });
+
+      $('body').bind('touchstart', function() {
+          event.preventDefault();
+          var pageX = event.changedTouches[0].pageX; // X 座標の位置
+          var pageY = event.changedTouches[0].pageY; // Y 座標の位置
+          var x = pageX / innerWidth;
+          var y = pageY / innerHeight;
+
+          addFireworks(x,y);
+      });
+    </script>
+  </body>
+</html>
